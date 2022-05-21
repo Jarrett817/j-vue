@@ -5,7 +5,7 @@ class ReactiveEffect {
   }
   run() {
     activeEffect = this;
-    this._fn();
+    return this._fn();
   }
 }
 
@@ -13,6 +13,7 @@ export function effect(fn: any) {
   // 生成一个依赖
   const _effect = new ReactiveEffect(fn);
   _effect.run();
+  return _effect.run.bind(_effect);
 }
 
 // 简易的实现，将当前reactive对象的依赖存在全局map中

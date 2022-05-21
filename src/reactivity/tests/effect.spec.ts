@@ -15,7 +15,7 @@ describe('effect', () => {
     expect(nextAge).toBe(12);
   });
 
-  it('should work', () => {
+  it.skip('should work', () => {
     const user = reactive({ a: 10, b: 11 });
     let aCount: number = 0;
     let bCount: number = 0;
@@ -32,5 +32,18 @@ describe('effect', () => {
     user.a = user.a + 1;
     expect(aCount).toBe(2);
     expect(bCount).toBe(1);
+  });
+
+  it('should return runner when call effect', () => {
+    let foo = 10;
+    const runner = effect(() => {
+      foo++;
+      return 'foo';
+    });
+
+    expect(foo).toBe(11);
+    const r = runner();
+    expect(foo).toBe(12);
+    expect(r).toBe('foo');
   });
 });
