@@ -1,6 +1,6 @@
 class ReactiveEffect {
   private _fn: any;
-  constructor(fn: any) {
+  constructor(fn: any, public scheduler?: any) {
     this._fn = fn;
   }
   run() {
@@ -9,9 +9,9 @@ class ReactiveEffect {
   }
 }
 
-export function effect(fn: any) {
+export function effect(fn: any, options: any = {}) {
   // 生成一个依赖
-  const _effect = new ReactiveEffect(fn);
+  const _effect = new ReactiveEffect(fn, options.scheduler);
   _effect.run();
   return _effect.run.bind(_effect);
 }
@@ -42,6 +42,8 @@ export function trigger(target: any, key: any) {
   const depsMap = targetMap.get(target);
   const dep = depsMap.get(key);
   for (const effect of dep) {
-    effect.run();
+    if (effect.scheduler) {
+      effect.scheduler();
+    } else effect.run();
   }
 }
