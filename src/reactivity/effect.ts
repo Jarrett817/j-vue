@@ -1,5 +1,8 @@
 import { extend } from '../shared';
 
+let shouldTrack = false;
+let activeEffect: any;
+
 class ReactiveEffect {
   private _fn: any;
   effect: any;
@@ -10,8 +13,15 @@ class ReactiveEffect {
     this._fn = fn;
   }
   run() {
+    if (!this.active) return this._fn();
+    shouldTrack = true;
     activeEffect = this;
-    return this._fn();
+    // 在执行this.fn的时候，fn里所用到的reactive变量，会将本对象作为依赖收集
+    const result = this._fn();
+    // 已经收集好依赖了，将shouldTrack置为false，表明在这个fn中所用到的reactive变量都已完成依赖收集
+    // 不会再有另外的reactive变量以此为依赖了，因此关闭掉
+    shouldTrack = false;
+    return result;
   }
 
   stop() {
@@ -19,6 +29,7 @@ class ReactiveEffect {
       cleanupEffect(this);
       if (this.onStop) this.onStop();
       this.active = false;
+      shouldTrack = false;
     }
   }
 }
@@ -42,9 +53,13 @@ export function effect(fn: any, options: any = {}) {
 
 // 简易的实现，将当前reactive对象的依赖存在全局map中
 const targetMap = new Map();
-let activeEffect: any;
+
+function isTracking() {
+  return shouldTrack && activeEffect !== undefined;
+}
 
 export function track(target: any, key: any) {
+  if (!isTracking()) return;
   // 一个reactive对象对应一个depsMap
   // 其中的每一个key都对应一个依赖dep
   let depsMap = targetMap.get(target);
@@ -58,8 +73,9 @@ export function track(target: any, key: any) {
     dep = new Set();
     depsMap.set(key, dep);
   }
-  if (!activeEffect) return;
+
   // 当前被获取的key添加一个依赖
+  if (dep.has(activeEffect)) return;
   dep.add(activeEffect);
   // dep在这里相当于activeEffect的父级，后面需要通过父级来删除子级实现删除
   activeEffect.deps.push(dep);

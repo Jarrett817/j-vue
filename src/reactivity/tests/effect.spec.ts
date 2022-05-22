@@ -15,7 +15,7 @@ describe('effect', () => {
     expect(nextAge).toBe(12);
   });
 
-  it.skip('should work', () => {
+  it('should work', () => {
     const user = reactive({ a: 10, b: 11 });
     let aCount: number = 0;
     let bCount: number = 0;
@@ -28,10 +28,13 @@ describe('effect', () => {
       user.b;
       bCount++;
     });
-    // TODO，有漏洞，共享一个activeEffect，导致直接user.a的时候触发了trigger，把上一个activeEffect也加进了依赖
+    // 有漏洞，共享一个activeEffect，导致直接user.a的时候触发了trigger，把上一个activeEffect也加进了依赖
+    // 需要在每次run后重置shouldTrack依赖，避免在执行如下代码时，将不需要的依赖收集进来
     user.a = user.a + 1;
+    user.b = user.b + 1;
     expect(aCount).toBe(2);
-    expect(bCount).toBe(1);
+    // expect(bCount).toBe(1);
+    expect(bCount).toBe(2);
   });
 
   it('should return runner when call effect', () => {
@@ -85,7 +88,7 @@ describe('effect', () => {
     obj.prop = 2;
     expect(dummy).toBe(2);
     stop(runner);
-    obj.prop = 3;
+    obj.prop++;
     expect(dummy).toBe(2);
 
     // stopped effect should still be manually callable
