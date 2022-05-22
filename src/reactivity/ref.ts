@@ -42,9 +42,23 @@ export function ref(value: any) {
 }
 
 export function isRef(ref: any) {
-  return !!ref.__v_isRef;
+  return !!ref?.__v_isRef;
 }
 
 export function unref(ref: any) {
   return isRef(ref) ? ref.value : ref;
+}
+
+// template中使用给ref拆箱
+export function proxyRefs(objWithRefs: any) {
+  return new Proxy(objWithRefs, {
+    get(target, key) {
+      return unref(Reflect.get(target, key));
+    },
+    set(target, key, value) {
+      if (isRef(target[key]) && !isRef(value)) {
+        return Reflect.set(target[key], 'value', value);
+      } else return Reflect.set(target, key, value);
+    },
+  });
 }

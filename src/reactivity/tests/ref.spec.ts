@@ -1,5 +1,5 @@
 import { effect } from '../effect';
-import { isRef, ref, unref } from '../ref';
+import { isRef, ref, unref, proxyRefs } from '../ref';
 
 describe('ref', () => {
   it('should be reactive', () => {
@@ -46,5 +46,17 @@ describe('ref', () => {
   test('unref', () => {
     expect(unref(1)).toBe(1);
     expect(unref(ref(1))).toBe(1);
+  });
+
+  test('ProxyRefs', () => {
+    const obj = { a: ref(0), b: 1 };
+    const _obj = proxyRefs(obj);
+    expect(_obj.a).toBe(0);
+    expect(_obj.b).toBe(1);
+
+    _obj.b = ref(222);
+    _obj.a = null;
+    expect(_obj.b).toBe(222);
+    expect(_obj.a).toBe(null);
   });
 });
