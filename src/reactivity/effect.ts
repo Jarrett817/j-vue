@@ -1,8 +1,11 @@
+import { extend } from '../shared';
+
 class ReactiveEffect {
   private _fn: any;
   effect: any;
   deps = []; // dep相当于是该依赖的父级
   active = true;
+  onStop?: () => void;
   constructor(fn: any, public scheduler?: any) {
     this._fn = fn;
   }
@@ -14,6 +17,7 @@ class ReactiveEffect {
   stop() {
     if (this.active) {
       cleanupEffect(this);
+      if (this.onStop) this.onStop();
       this.active = false;
     }
   }
@@ -27,8 +31,10 @@ function cleanupEffect(effect: any) {
 
 export function effect(fn: any, options: any = {}) {
   // 生成一个依赖
-  const _effect = new ReactiveEffect(fn, options.scheduler);
+  const _effect: any = new ReactiveEffect(fn, options.scheduler);
+  extend(_effect, options);
   _effect.run();
+
   const runner: any = _effect.run.bind(_effect);
   runner.effect = _effect; // 这一步，是为了能直接通过runner找到依赖本身
   return runner;
@@ -52,10 +58,11 @@ export function track(target: any, key: any) {
     dep = new Set();
     depsMap.set(key, dep);
   }
+  if (!activeEffect) return;
   // 当前被获取的key添加一个依赖
   dep.add(activeEffect);
   // dep在这里相当于activeEffect的父级，后面需要通过父级来删除子级实现删除
-  activeEffect && activeEffect.deps.push(dep);
+  activeEffect.deps.push(dep);
 }
 
 export function trigger(target: any, key: any) {

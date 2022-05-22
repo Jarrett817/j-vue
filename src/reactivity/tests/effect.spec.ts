@@ -2,7 +2,7 @@ import { effect, stop } from '../effect';
 import { reactive } from '../reactive';
 
 describe('effect', () => {
-  it.skip('should work', () => {
+  it('should work', () => {
     const user = reactive({ age: 10 });
     let nextAge;
     effect(() => {
@@ -91,5 +91,16 @@ describe('effect', () => {
     // stopped effect should still be manually callable
     runner();
     expect(dummy).toBe(3);
+  });
+
+  it('events: onStop', () => {
+    const onStop = jest.fn();
+    // stop时的回调函数
+    const runner = effect(() => {}, {
+      onStop,
+    });
+
+    stop(runner);
+    expect(onStop).toHaveBeenCalled();
   });
 });
