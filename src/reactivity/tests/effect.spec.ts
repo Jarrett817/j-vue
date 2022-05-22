@@ -106,4 +106,14 @@ describe('effect', () => {
     stop(runner);
     expect(onStop).toHaveBeenCalled();
   });
+
+  it('should observe nested properties', () => {
+    let dummy;
+    const counter = reactive({ nested: { num: 0 } });
+    effect(() => (dummy = counter.nested.num));
+
+    expect(dummy).toBe(0);
+    counter.nested.num = 8;
+    expect(dummy).toBe(8);
+  });
 });
