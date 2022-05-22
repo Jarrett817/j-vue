@@ -1,4 +1,8 @@
-import { mutableHandlers, readonlyHandlers } from './baseHandlers';
+import {
+  mutableHandlers,
+  readonlyHandlers,
+  shallowReadonlyHandlers,
+} from './baseHandlers';
 
 interface ReactiveRaw {
   [key: string | number | symbol]: any;
@@ -20,6 +24,10 @@ export function reactive(raw: ReactiveRaw) {
 
 export function readonly(raw: ReactiveRaw) {
   return createActiveObject(raw, readonlyHandlers);
+}
+
+export function shallowReadonly(raw: any) {
+  return createActiveObject(raw, shallowReadonlyHandlers);
 }
 
 export function isReactive(value: any) {
