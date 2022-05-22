@@ -1,27 +1,18 @@
-import { track, trigger } from './effect';
+import { mutableHandlers, readonlyHandlers } from './baseHandlers';
 
 interface ReactiveRaw {
   [key: string | number | symbol]: any;
 }
 
+function createActiveObject(raw: any, baseHandlers: any) {
+  return new Proxy(raw, baseHandlers);
+}
+
 // 观察者模式，收集依赖至effect，set时逐个遍历触发
 export function reactive(raw: ReactiveRaw) {
-  return new Proxy(raw, {
-    get(target, key) {
-      /* https://www.zhangxinxu.com/wordpress/2021/07/js-proxy-reflect/
-       使用reflect的原因参考张鑫旭的文章
-       */
-      // 收集依赖
-      const res = Reflect.get(target, key);
-      track(target, key);
-      return res;
-    },
-    set(target, key, value) {
-      const res = Reflect.set(target, key, value);
+  return createActiveObject(raw, mutableHandlers);
+}
 
-      // 触发依赖
-      trigger(target, key);
-      return res;
-    },
-  });
+export function readonly(raw: ReactiveRaw) {
+  return createActiveObject(raw, readonlyHandlers);
 }
