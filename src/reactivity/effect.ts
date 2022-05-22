@@ -54,8 +54,16 @@ export function effect(fn: any, options: any = {}) {
 // 简易的实现，将当前reactive对象的依赖存在全局map中
 const targetMap = new Map();
 
-function isTracking() {
+export function isTracking() {
   return shouldTrack && activeEffect !== undefined;
+}
+
+export function trackEffects(dep: any) {
+  // 当前被获取的key添加一个依赖
+  if (dep.has(activeEffect)) return;
+  dep.add(activeEffect);
+  // dep在这里相当于activeEffect的父级，后面需要通过父级来删除子级实现删除
+  activeEffect.deps.push(dep);
 }
 
 export function track(target: any, key: any) {
@@ -73,22 +81,21 @@ export function track(target: any, key: any) {
     dep = new Set();
     depsMap.set(key, dep);
   }
-
-  // 当前被获取的key添加一个依赖
-  if (dep.has(activeEffect)) return;
-  dep.add(activeEffect);
-  // dep在这里相当于activeEffect的父级，后面需要通过父级来删除子级实现删除
-  activeEffect.deps.push(dep);
+  trackEffects(dep);
 }
 
-export function trigger(target: any, key: any) {
-  const depsMap = targetMap.get(target);
-  const dep = depsMap.get(key);
+export function triggerEffects(dep: any) {
   for (const effect of dep) {
     if (effect.scheduler) {
       effect.scheduler();
     } else effect.run();
   }
+}
+
+export function trigger(target: any, key: any) {
+  const depsMap = targetMap.get(target);
+  const dep = depsMap.get(key);
+  triggerEffects(dep);
 }
 
 export function stop(runner: any) {
