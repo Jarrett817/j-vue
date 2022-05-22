@@ -22,7 +22,7 @@ describe('readonly', () => {
     expect(isReadonly(original)).toBe(false);
   });
 
-  it('should work with nested isReadonly', () => {
+  it('should work with nested readonly', () => {
     const original = { foo: 1, bar: { baz: 2 } };
     const wrapped = readonly(original);
     expect(isReadonly(wrapped.bar)).toBe(true);
