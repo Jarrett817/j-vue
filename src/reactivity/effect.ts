@@ -2,8 +2,9 @@ import { extend } from '../shared';
 
 let shouldTrack = false;
 let activeEffect: any;
-
-class ReactiveEffect {
+// 简易的实现，将当前reactive对象的依赖存在全局map中
+const targetMap = new Map();
+export class ReactiveEffect {
   private _fn: any;
   effect: any;
   deps = []; // dep相当于是该依赖的父级
@@ -50,9 +51,6 @@ export function effect(fn: any, options: any = {}) {
   runner.effect = _effect; // 这一步，是为了能直接通过runner找到依赖本身
   return runner;
 }
-
-// 简易的实现，将当前reactive对象的依赖存在全局map中
-const targetMap = new Map();
 
 export function isTracking() {
   return shouldTrack && activeEffect !== undefined;
