@@ -8,28 +8,28 @@ describe('computed', () => {
     });
     expect(age.value).toBe(1);
   });
-  test.skip('should unwrap computed refs', () => {
-    // readonly
-    const a = computed(() => 1);
-    // writable
-    const b = computed({
-      get: () => 1,
-      set: () => {},
-    });
-    const obj = reactive({ a, b });
-    // check type
-    obj.a + 1;
-    obj.b + 1;
-    expect(typeof obj.a).toBe(`number`);
-    expect(typeof obj.b).toBe(`number`);
-  });
-  it.skip('should return updated value', () => {
-    const value = reactive<{ foo?: number }>({});
-    const cValue = computed(() => value.foo);
-    expect(cValue.value).toBe(undefined);
-    value.foo = 1;
-    expect(cValue.value).toBe(1);
-  });
+  // test.skip('should unwrap computed refs', () => {
+  //   // readonly
+  //   const a = computed(() => 1);
+  //   // writable
+  //   const b = computed({
+  //     get: () => 1,
+  //     set: () => {},
+  //   });
+  //   const obj = reactive({ a, b });
+  //   // check type
+  //   obj.a + 1;
+  //   obj.b + 1;
+  //   expect(typeof obj.a).toBe(`number`);
+  //   expect(typeof obj.b).toBe(`number`);
+  // });
+  // it.skip('should return updated value', () => {
+  //   const value = reactive<{ foo?: number }>({});
+  //   const cValue = computed(() => value.foo);
+  //   expect(cValue.value).toBe(undefined);
+  //   value.foo = 1;
+  //   expect(cValue.value).toBe(1);
+  // });
 
   it('should compute lazily', () => {
     const value = reactive({});

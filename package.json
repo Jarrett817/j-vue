@@ -1,20 +1,25 @@
 {
   "name": "j-vue",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "lib/guide-j-vue.cjs.js",
+  "module": "lib/guide-j-vue.ems.js",
   "repository": "git@github.com:Jarrett817/j-vue.git",
   "author": "wangjr <wangjr@getui.com>",
   "license": "MIT",
   "scripts": {
+    "build": "rollup -c rollup.config.js",
     "test": "jest"
   },
   "devDependencies": {
     "@babel/core": "^7.18.0",
     "@babel/preset-env": "^7.18.0",
     "@babel/preset-typescript": "^7.17.12",
+    "@rollup/plugin-typescript": "^8.3.2",
     "@types/jest": "^27.5.1",
     "babel-jest": "^28.1.0",
     "jest": "^28.1.0",
+    "rollup": "^2.74.1",
+    "tslib": "^2.4.0",
     "typescript": "^4.6.4"
   },
   "dependencies": {}
