@@ -7,6 +7,8 @@ export function createApp(rootComponent: any) {
       // 把根组件转解析为虚拟节点
       const vnode = createVNode(rootComponent);
       // 开始render
+      console.log('开始render');
+
       render(
         vnode,
         typeof rootContainer === 'string'
