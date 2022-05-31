@@ -1,21 +1,27 @@
+import { ShapeFlags } from '../shared/shapeFlags';
 import { createComponentInstance, setupComponent } from './component';
+
+// const shapeFlags = {
+//   element: 0,
+//   stateful_component: 0,
+//   text_children: 0,
+//   array_children: 0,
+// };
+// flag不够高效、位运算更合适
 
 export function render(vnode: any, container: any) {
   patch(vnode, container);
 }
 
-function isElement(vnode) {
-  if (typeof vnode.type === 'string') {
-    return true;
-  } else return false;
-}
-
 function patch(vnode: any, container: any) {
   // 处理组件
   // 判断是否是element
-  if (isElement(vnode)) {
+  const { shapeFlag } = vnode;
+  if (shapeFlag & ShapeFlags.ELEMENT) {
     processElement(vnode, container);
-  } else processComponent(vnode, container);
+  } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
+    processComponent(vnode, container);
+  }
 }
 
 function processComponent(vnode: any, container: any) {
@@ -42,13 +48,13 @@ function processElement(vnode: any, container: any) {
   mountElement(vnode, container);
 }
 function mountElement(vnode: any, container: any) {
-  const { type, children, props } = vnode;
+  const { type, children, props, shapeFlag } = vnode;
   const el = document.createElement(type);
   console.log('vnode', vnode);
   vnode.el = el;
-  if (typeof children === 'string') {
+  if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
     el.textContent = children;
-  } else if (Array.isArray(children)) {
+  } else if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
     mountChildren(children, el);
   }
   setAttribute(el, props);
