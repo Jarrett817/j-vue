@@ -17,6 +17,7 @@ function patch(vnode: any, container: any) {
   // 处理组件
   // 判断是否是element
   const { shapeFlag } = vnode;
+  // 如果是element
   if (shapeFlag & ShapeFlags.ELEMENT) {
     processElement(vnode, container);
   } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
@@ -50,7 +51,6 @@ function processElement(vnode: any, container: any) {
 function mountElement(vnode: any, container: any) {
   const { type, children, props, shapeFlag } = vnode;
   const el = document.createElement(type);
-  console.log('vnode', vnode);
   vnode.el = el;
   if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
     el.textContent = children;

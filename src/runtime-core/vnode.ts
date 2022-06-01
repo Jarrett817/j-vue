@@ -11,7 +11,7 @@ export function createVNode(type: any, props?: any, children?: any) {
 
   if (typeof children === 'string') {
     vnode.shapeFlag |= ShapeFlags.TEXT_CHILDREN;
-  } else if (Array.isArray('array')) {
+  } else if (Array.isArray(children)) {
     vnode.shapeFlag |= ShapeFlags.ARRAY_CHILDREN;
   }
 

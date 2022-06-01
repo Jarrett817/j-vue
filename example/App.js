@@ -4,7 +4,7 @@ window.self = null;
 export const App = {
   render() {
     window.self = this;
-    return h('div', { id: 'root', class: 'red' }, [
+    return h('div', { class: 'red' }, [
       // h('div', 'hi,' + this.msg),
       h('p', { style: { color: 'blue' } }, 'im blue'),
       h('h1', {}, this.msg + '23123'),
