@@ -57,7 +57,22 @@ function mountElement(vnode: any, container: any) {
   } else if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
     mountChildren(children, el);
   }
-  setAttribute(el, props);
+  for (const key in props) {
+    const val = props[key];
+    // 小步骤开发，先写具体，后面改通用
+    // if (key === 'onClick') {
+    //   el.addEventListener('click', val);
+    // } else {
+    //   el.setAttribute(key, val);
+    // }
+    const isOn = (key: string) => /^on[A-Z]/.test(key);
+    if (isOn(key)) {
+      const event = key.slice(2).toLowerCase();
+      el.addEventListener(event, val);
+    } else {
+      el.setAttribute(key, val);
+    }
+  }
   container.append(el);
 }
 
