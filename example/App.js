@@ -22,11 +22,19 @@ export const App = {
       },
       [
         // 暂时必须传props
-        // h('div', {}, 'hi,' + this.msg),
-        // h('p', { style: { color: 'blue' } }, 'im blue'),
+        h('div', {}, 'hi,' + this.msg),
+        h('p', { style: { color: 'blue' } }, 'im blue'),
         // h('h1', {}, this.msg + '23123'),
         // h('div', {}, '测试props'),
-        h(Foo, { count: 1 }),
+        h(Foo, {
+          onAdd(a, b) {
+            console.log('我接收到了', a, b);
+          },
+          onAddFoo() {
+            console.log('add-foo');
+          },
+          count: 1,
+        }),
       ]
     );
   },
