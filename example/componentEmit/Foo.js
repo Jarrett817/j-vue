@@ -1,4 +1,4 @@
-import { h } from '../lib/guide-j-vue.ems.js';
+import { h } from '../../lib/guide-j-vue.ems.js';
 
 export const Foo = {
   setup(props, { emit }) {

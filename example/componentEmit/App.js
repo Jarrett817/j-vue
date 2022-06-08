@@ -1,4 +1,4 @@
-import { h } from '../lib/guide-j-vue.ems.js';
+import { h } from '../../lib/guide-j-vue.ems.js';
 import { Foo } from './Foo.js';
 // window.self = null;
 

@@ -2,6 +2,7 @@ import { shallowReadonly } from '../reactivity/reactive';
 import { emit } from './componentEmit';
 import { initProps } from './componentProps';
 import { PublicInstanceProxyHandlers } from './componentPublicInstance';
+import { initSlots } from './componentSlots';
 
 export function createComponentInstance(vnode: any) {
   const component = {
@@ -10,6 +11,7 @@ export function createComponentInstance(vnode: any) {
     setupState: {},
     el: null, // 这个el是真实dom
     props: {},
+    slots: {},
     emit: () => {},
   };
   component.emit = emit.bind(null, component) as any;
@@ -17,8 +19,12 @@ export function createComponentInstance(vnode: any) {
 }
 
 export function setupComponent(instance: any) {
-  // initSlots
+  // 走到这一步，已经说明是组件类型
   initProps(instance, instance.vnode.props);
+  // 渲染插槽就是把对应的children放到h函数里
+  initSlots(instance, instance.vnode.children);
+  // 初始化props和slots都在setup之前
+
   setupStateFulComponents(instance);
 }
 function setupStateFulComponents(instance: any) {
