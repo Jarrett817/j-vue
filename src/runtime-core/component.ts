@@ -33,11 +33,13 @@ function setupStateFulComponents(instance: any) {
 
   const { setup } = component;
   if (setup) {
+    setCurrentInstance(instance);
     // 调用setup获取返回值
     // 在setup里传入props
     const setupResult = setup(shallowReadonly(instance.props), {
       emit: instance.emit,
     });
+    setCurrentInstance(null);
     handleSetupResult(instance, setupResult);
   }
 }
@@ -55,4 +57,13 @@ function finishComponentSetup(instance: any) {
   if (Component.render) {
     instance.render = Component.render;
   }
+}
+
+let currentInstance = null;
+export function getCurrentInstance() {
+  return currentInstance;
+}
+
+function setCurrentInstance(instance) {
+  currentInstance = instance;
 }
