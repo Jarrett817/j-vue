@@ -6,7 +6,7 @@ export const App = {
     return h('h1', {}, '123');
   },
   setup() {
-    console.log(getCurrentInstance());
+    console.log('currentInstance', getCurrentInstance());
     return {
       msg: 'vue',
     };

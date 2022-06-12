@@ -11,16 +11,16 @@ import { Fragment, Text } from './vnode';
 // flag不够高效、位运算更合适
 
 export function render(vnode: any, container: any) {
-  patch(vnode, container);
+  patch(vnode, container, null);
 }
 
-function patch(vnode: any, container: any) {
+function patch(vnode: any, container: any, parentComponent) {
   // 处理组件
   // 判断是否是element
   const { shapeFlag, type } = vnode;
   switch (type) {
     case Fragment:
-      processFragment(vnode, container);
+      processFragment(vnode, container, parentComponent);
       break;
     case Text:
       processText(vnode, container);
@@ -28,20 +28,20 @@ function patch(vnode: any, container: any) {
     default:
       // 如果是element
       if (shapeFlag & ShapeFlags.ELEMENT) {
-        processElement(vnode, container);
+        processElement(vnode, container, parentComponent);
       } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
-        processComponent(vnode, container);
+        processComponent(vnode, container, parentComponent);
       }
       break;
   }
 }
 
-function processComponent(vnode: any, container: any) {
-  mountComponent(vnode, container);
+function processComponent(vnode: any, container: any, parentComponent) {
+  mountComponent(vnode, container, parentComponent);
 }
 
-function mountComponent(initialVnode: any, container) {
-  const instance = createComponentInstance(initialVnode);
+function mountComponent(initialVnode: any, container, parentComponent) {
+  const instance = createComponentInstance(initialVnode, parentComponent);
   // 执行setup得到返回值，并设置render
   setupComponent(instance);
   // 执行render，继续处理子组件
@@ -52,21 +52,21 @@ function setupRenderEffect(instance: any, initialVnode, container) {
   // 为了实现直接在render里使用this.xxx获取setup中定义的变量和函数
   // 真正的值是从setupState里取
   const subTree = instance.render.call(proxy);
-  patch(subTree, container);
+  patch(subTree, container, instance);
   // 在当前子节点全部处理完毕后赋值
   initialVnode.el = subTree.el;
 }
-function processElement(vnode: any, container: any) {
-  mountElement(vnode, container);
+function processElement(vnode: any, container: any, parentComponent) {
+  mountElement(vnode, container, parentComponent);
 }
-function mountElement(vnode: any, container: any) {
+function mountElement(vnode: any, container: any, parentComponent) {
   const { type, children, props, shapeFlag } = vnode;
   const el = document.createElement(type);
   vnode.el = el;
   if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
     el.textContent = children;
   } else if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
-    mountChildren(vnode, el);
+    mountChildren(vnode, el, parentComponent);
   }
   for (const key in props) {
     const val = props[key];
@@ -87,13 +87,13 @@ function mountElement(vnode: any, container: any) {
   container.append(el);
 }
 
-function mountChildren(vnode, container) {
+function mountChildren(vnode, container, parentComponent) {
   vnode.children.forEach(v => {
-    patch(v, container);
+    patch(v, container, parentComponent);
   });
 }
-function processFragment(vnode: any, container: any) {
-  mountChildren(vnode, container);
+function processFragment(vnode: any, container: any, parentComponent) {
+  mountChildren(vnode, container, parentComponent);
 }
 
 function processText(vnode, container) {

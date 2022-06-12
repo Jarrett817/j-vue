@@ -4,12 +4,14 @@ import { initProps } from './componentProps';
 import { PublicInstanceProxyHandlers } from './componentPublicInstance';
 import { initSlots } from './componentSlots';
 
-export function createComponentInstance(vnode: any) {
+export function createComponentInstance(vnode: any, parent) {
   const component = {
     vnode, // 这是最初始的vnode
     type: vnode.type,
     setupState: {},
     el: null, // 这个el是真实dom
+    provides: parent ? parent.provides : {},
+    parent: parent || {},
     props: {},
     slots: {},
     emit: () => {},
