@@ -15,6 +15,7 @@ const shallowReadonlyGet = createGetter(true, true);
 */
 function createGetter(isReadonly = false, shallow = false) {
   return function get(target: any, key: string) {
+    // 方便之后判断是否是Reactive
     if (key === ReactiveFlags.IS_REACTIVE) {
       return !isReadonly;
     } else if (key == ReactiveFlags.IS_READONLY) {
@@ -22,6 +23,7 @@ function createGetter(isReadonly = false, shallow = false) {
     }
     const res = Reflect.get(target, key);
     if (shallow) return res;
+    // 对于嵌套的对象进行响应式处理
     if (isObject(res)) {
       return isReadonly ? readonly(res) : reactive(res);
     }

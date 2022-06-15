@@ -17,3 +17,5 @@ export const camelize = (str: string) =>
   });
 
 export const toHanderKey = (str: string) => (str ? 'on' + capitalize(str) : '');
+
+export const EMPTY_OBJ = {};

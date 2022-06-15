@@ -3,6 +3,7 @@ import { createComponentInstance, setupComponent } from './component';
 import { createAppAPI } from './createApp';
 import { Fragment, Text } from './vnode';
 import { effect } from '../reactivity/effect';
+import { EMPTY_OBJ } from '../shared';
 
 // const shapeFlags = {
 //   element: 0,
@@ -65,6 +66,7 @@ export function createRenderer(options) {
         // 真正的值是从setupState里取
         const subTree = (instance.subTree = instance.render.call(proxy));
         patch(null, subTree, container, instance);
+
         // 在当前子节点全部处理完毕后赋值
         initialVNode.el = subTree.el;
         instance.isMounted = true;
@@ -76,8 +78,6 @@ export function createRenderer(options) {
         instance.subTree = subTree;
 
         patch(prevSubTree, subTree, container, instance);
-
-        console.log('123', subTree, prevSubTree);
       }
     });
   }
@@ -88,8 +88,32 @@ export function createRenderer(options) {
       patchElement(n1, n2, container);
     }
   }
+  function patchElement(n1, n2, container) {
+    const oldProps = n1.props || EMPTY_OBJ;
+    const newProps = n2.props || EMPTY_OBJ;
 
-  function patchElement(n1, n2, container) {}
+    const el = (n2.el = n1.el);
+    patchProps(el, oldProps, newProps);
+  }
+
+  function patchProps(el, oldProps, newProps) {
+    if (oldProps !== newProps) {
+      for (const key in newProps) {
+        const prevProp = oldProps[key];
+        const nextProp = newProps[key];
+        if (prevProp !== nextProp) {
+          hostPatchProp(el, key, prevProp, nextProp);
+        }
+      }
+      if (oldProps !== EMPTY_OBJ) {
+        for (const key in oldProps) {
+          if (!(key in newProps)) {
+            hostPatchProp(el, key, oldProps[key], null);
+          }
+        }
+      }
+    }
+  }
   function mountElement(vnode: any, container: any, parentComponent) {
     const { type, children, props, shapeFlag } = vnode;
     const el = hostCreateElement(type);
@@ -108,7 +132,7 @@ export function createRenderer(options) {
       //   el.setAttribute(key, val);
       // }
 
-      hostPatchProp(el, key, val);
+      hostPatchProp(el, key, null, val);
     }
     // container.append(el);
     hostInsert(el, container);
